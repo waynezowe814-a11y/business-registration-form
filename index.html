@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>E‑Commerce Registration</title>
+    <style>
+      :root{--bg:#f6f8fa;--card:#fff;--accent:#0b5fff}
+      body{font-family:Inter,system-ui,Segoe UI,Arial;background:var(--bg);margin:0;padding:32px;display:flex;align-items:center;justify-content:center;min-height:100vh}
+      .card{background:var(--card);border-radius:12px;box-shadow:0 6px 24px rgba(12,20,40,.08);width:100%;max-width:720px;padding:28px}
+      h1{margin:0 0 8px;font-size:20px}
+      p.lead{margin:0 0 20px;color:#556}
+      form{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+      .full{grid-column:1/-1}
+      label{display:block;font-size:13px;margin-bottom:6px;color:#223}
+      input,select{width:100%;padding:10px;border:1px solid #d8dbe0;border-radius:8px;font-size:14px}
+      .actions{display:flex;gap:12px;align-items:center;margin-top:12px}
+      button{background:var(--accent);color:#fff;border:none;padding:10px 14px;border-radius:8px;cursor:pointer}
+      .note{font-size:13px;color:#667}
+      .message{padding:12px;border-radius:8px;background:#eef9f2;color:#084d28;margin-top:12px;display:none;white-space:pre-wrap}
+      @media(max-width:640px){form{grid-template-columns:1fr}}
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>E‑Commerce Business Registration</h1>
+      <p class="lead">Register your business and select the country of origin.</p>
+
+      <form id="regForm" novalidate>
+        <div>
+          <label for="first">First name</label>
+          <input id="first" name="first" required>
+        </div>
+
+        <div>
+          <label for="last">Last name</label>
+          <input id="last" name="last" required>
+        </div>
+
+        <div class="full">
+          <label for="business">Business name</label>
+          <input id="business" name="business" required>
+        </div>
+
+        <div>
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" required>
+        </div>
+
+        <div>
+          <label for="phone">Phone</label>
+          <input id="phone" name="phone" type="tel">
+        </div>
+
+        <div class="full">
+          <label for="website">Website (optional)</label>
+          <input id="website" name="website" type="url" placeholder="https://example.com">
+        </div>
+
+        <div>
+          <label for="country">Country of origin</label>
+          <select id="country" name="country" required>
+            <option value="">Loading countries…</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="category">Business category</label>
+          <select id="category" name="category" required>
+            <option value="">Select category</option>
+            <option>Retail</option>
+            <option>Wholesale</option>
+            <option>Manufacturer</option>
+            <option>Service</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <div class="full">
+          <label for="about">Short description</label>
+          <input id="about" name="about" maxlength="200">
+        </div>
+
+        <div class="full actions">
+          <button type="submit">Register</button>
+        </div>
+
+      </form>
+
+      <div id="message" class="message" role="status"></div>
+    </div>
+
+    <script>
+      const EMBEDDED_COUNTRIES = [
+        {name:"Afghanistan",code:"AF"},{name:"Albania",code:"AL"},{name:"Algeria",code:"DZ"},{name:"Andorra",code:"AD"},{name:"Angola",code:"AO"},{name:"Antigua and Barbuda",code:"AG"},{name:"Argentina",code:"AR"},{name:"Armenia",code:"AM"},{name:"Australia",code:"AU"},{name:"Austria",code:"AT"},{name:"Azerbaijan",code:"AZ"},{name:"Bahamas",code:"BS"},{name:"Bahrain",code:"BH"},{name:"Bangladesh",code:"BD"},{name:"Barbados",code:"BB"},{name:"Belarus",code:"BY"},{name:"Belgium",code:"BE"},{name:"Belize",code:"BZ"},{name:"Benin",code:"BJ"},{name:"Bhutan",code:"BT"},{name:"Bolivia",code:"BO"},{name:"Bosnia and Herzegovina",code:"BA"},{name:"Botswana",code:"BW"},{name:"Brazil",code:"BR"},{name:"Brunei",code:"BN"},{name:"Bulgaria",code:"BG"},{name:"Burkina Faso",code:"BF"},{name:"Burundi",code:"BI"},{name:"Cabo Verde",code:"CV"},{name:"Cambodia",code:"KH"},{name:"Cameroon",code:"CM"},{name:"Canada",code:"CA"},{name:"Central African Republic",code:"CF"},{name:"Chad",code:"TD"},{name:"Chile",code:"CL"},{name:"China",code:"CN"},{name:"Colombia",code:"CO"},{name:"Comoros",code:"KM"},{name:"Congo (Congo-Brazzaville)",code:"CG"},{name:"Costa Rica",code:"CR"},{name:"Côte d'Ivoire",code:"CI"},{name:"Croatia",code:"HR"},{name:"Cuba",code:"CU"},{name:"Cyprus",code:"CY"},{name:"Czechia",code:"CZ"},{name:"Democratic Republic of the Congo",code:"CD"},{name:"Denmark",code:"DK"},{name:"Djibouti",code:"DJ"},{name:"Dominica",code:"DM"},{name:"Dominican Republic",code:"DO"},{name:"Ecuador",code:"EC"},{name:"Egypt",code:"EG"},{name:"El Salvador",code:"SV"},{name:"Equatorial Guinea",code:"GQ"},{name:"Eritrea",code:"ER"},{name:"Estonia",code:"EE"},{name:"Eswatini",code:"SZ"},{name:"Ethiopia",code:"ET"},{name:"Fiji",code:"FJ"},{name:"Finland",code:"FI"},{name:"France",code:"FR"},{name:"Gabon",code:"GA"},{name:"Gambia",code:"GM"},{name:"Georgia",code:"GE"},{name:"Germany",code:"DE"},{name:"Ghana",code:"GH"},{name:"Greece",code:"GR"},{name:"Grenada",code:"GD"},{name:"Guatemala",code:"GT"},{name:"Guinea",code:"GN"},{name:"Guinea-Bissau",code:"GW"},{name:"Guyana",code:"GY"},{name:"Haiti",code:"HT"},{name:"Honduras",code:"HN"},{name:"Hungary",code:"HU"},{name:"Iceland",code:"IS"},{name:"India",code:"IN"},{name:"Indonesia",code:"ID"},{name:"Iran",code:"IR"},{name:"Iraq",code:"IQ"},{name:"Ireland",code:"IE"},{name:"Israel",code:"IL"},{name:"Italy",code:"IT"},{name:"Jamaica",code:"JM"},{name:"Japan",code:"JP"},{name:"Jordan",code:"JO"},{name:"Kazakhstan",code:"KZ"},{name:"Kenya",code:"KE"},{name:"Kiribati",code:"KI"},{name:"Kuwait",code:"KW"},{name:"Kyrgyzstan",code:"KG"},{name:"Laos",code:"LA"},{name:"Latvia",code:"LV"},{name:"Lebanon",code:"LB"},{name:"Lesotho",code:"LS"},{name:"Liberia",code:"LR"},{name:"Libya",code:"LY"},{name:"Liechtenstein",code:"LI"},{name:"Lithuania",code:"LT"},{name:"Luxembourg",code:"LU"},{name:"Madagascar",code:"MG"},{name:"Malawi",code:"MW"},{name:"Malaysia",code:"MY"},{name:"Maldives",code:"MV"},{name:"Mali",code:"ML"},{name:"Malta",code:"MT"},{name:"Marshall Islands",code:"MH"},{name:"Mauritania",code:"MR"},{name:"Mauritius",code:"MU"},{name:"Mexico",code:"MX"},{name:"Micronesia",code:"FM"},{name:"Moldova",code:"MD"},{name:"Monaco",code:"MC"},{name:"Mongolia",code:"MN"},{name:"Montenegro",code:"ME"},{name:"Morocco",code:"MA"},{name:"Mozambique",code:"MZ"},{name:"Myanmar",code:"MM"},{name:"Namibia",code:"NA"},{name:"Nauru",code:"NR"},{name:"Nepal",code:"NP"},{name:"Netherlands",code:"NL"},{name:"New Zealand",code:"NZ"},{name:"Nicaragua",code:"NI"},{name:"Niger",code:"NE"},{name:"Nigeria",code:"NG"},{name:"North Korea",code:"KP"},{name:"North Macedonia",code:"MK"},{name:"Norway",code:"NO"},{name:"Oman",code:"OM"},{name:"Pakistan",code:"PK"},{name:"Palau",code:"PW"},{name:"Panama",code:"PA"},{name:"Papua New Guinea",code:"PG"},{name:"Paraguay",code:"PY"},{name:"Peru",code:"PE"},{name:"Philippines",code:"PH"},{name:"Poland",code:"PL"},{name:"Portugal",code:"PT"},{name:"Qatar",code:"QA"},{name:"Romania",code:"RO"},{name:"Russia",code:"RU"},{name:"Rwanda",code:"RW"},{name:"Saint Kitts and Nevis",code:"KN"},{name:"Saint Lucia",code:"LC"},{name:"Saint Vincent and the Grenadines",code:"VC"},{name:"Samoa",code:"WS"},{name:"San Marino",code:"SM"},{name:"Sao Tome and Principe",code:"ST"},{name:"Saudi Arabia",code:"SA"},{name:"Senegal",code:"SN"},{name:"Serbia",code:"RS"},{name:"Seychelles",code:"SC"},{name:"Sierra Leone",code:"SL"},{name:"Singapore",code:"SG"},{name:"Slovakia",code:"SK"},{name:"Slovenia",code:"SI"},{name:"Solomon Islands",code:"SB"},{name:"Somalia",code:"SO"},{name:"South Africa",code:"ZA"},{name:"South Korea",code:"KR"},{name:"South Sudan",code:"SS"},{name:"Spain",code:"ES"},{name:"Sri Lanka",code:"LK"},{name:"Sudan",code:"SD"},{name:"Suriname",code:"SR"},{name:"Sweden",code:"SE"},{name:"Switzerland",code:"CH"},{name:"Syria",code:"SY"},{name:"Taiwan",code:"TW"},{name:"Tajikistan",code:"TJ"},{name:"Tanzania",code:"TZ"},{name:"Thailand",code:"TH"},{name:"Timor-Leste",code:"TL"},{name:"Togo",code:"TG"},{name:"Tonga",code:"TO"},{name:"Trinidad and Tobago",code:"TT"},{name:"Tunisia",code:"TN"},{name:"Turkey",code:"TR"},{name:"Turkmenistan",code:"TM"},{name:"Tuvalu",code:"TV"},{name:"Uganda",code:"UG"},{name:"Ukraine",code:"UA"},{name:"United Arab Emirates",code:"AE"},{name:"United Kingdom",code:"GB"},{name:"United States",code:"US"},{name:"Uruguay",code:"UY"},{name:"Uzbekistan",code:"UZ"},{name:"Vanuatu",code:"VU"},{name:"Vatican City",code:"VA"},{name:"Venezuela",code:"VE"},{name:"Vietnam",code:"VN"},{name:"Yemen",code:"YE"},{name:"Zambia",code:"ZM"},{name:"Zimbabwe",code:"ZW"}
+      ];
+
+      async function loadCountries(){
+        const sel = document.getElementById('country');
+        const cacheKey = 'countries_v1';
+        const populate = list => {
+          const sorted = list.slice().sort((a,b)=>a.name.localeCompare(b.name));
+          sel.innerHTML = '<option value="">Select a country</option>' + sorted.map(c=>`<option value="${c.code}">${c.name}</option>`).join('');
+        };
+
+        // Use cached list immediately if available
+        try{
+          const cached = localStorage.getItem(cacheKey);
+          if(cached){
+            populate(JSON.parse(cached));
+          }
+        }catch(e){console.warn('LocalStorage read failed', e)}
+
+        // Try fetching fresh list; fall back to embedded on failure
+        try{
+          const res = await fetch('https://restcountries.com/v3.1/all');
+          if(!res.ok) throw new Error('Country fetch failed');
+          const data = await res.json();
+          const list = data.map(c=>({name:c.name.common, code:c.cca2}));
+          try{ localStorage.setItem(cacheKey, JSON.stringify(list)); }catch(e){/* ignore */}
+          populate(list);
+        }catch(err){
+          // If nothing was shown from cache, use embedded list
+          const currentOptions = sel.options.length;
+          if(currentOptions <= 1){
+            populate(EMBEDDED_COUNTRIES);
+          }
+          console.error('Could not fetch countries, using fallback.', err);
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', ()=>{
+        loadCountries();
+
+        const form = document.getElementById('regForm');
+        const message = document.getElementById('message');
+        form.addEventListener('submit', e=>{
+          e.preventDefault();
+          if(!form.checkValidity()){
+            form.reportValidity();
+            return;
+          }
+          const fm = new FormData(form);
+          const payload = {};
+          fm.forEach((v,k)=>payload[k]=v);
+          message.style.display = 'block';
+          message.textContent = 'Registration received — this demo shows a successful client-side submit.\n' + JSON.stringify(payload, null, 2);
+        });
+      });
+    </script>
+  </body>
+</html>
